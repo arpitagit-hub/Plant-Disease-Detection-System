@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeafGuardAI</title>
+
+  <!--<link rel="stylesheet" href="style.css" />-->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
+
+  <!-- Firebase CDN -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="logo">🌿 LeafGuardAI</div>
+
+  <nav class="nav-center">
+    <a href="#">Home</a>
+    <a href="#about">About</a>
+    <a href="#">Blog</a>
+    <a href="#detection">Detection</a>
+  </nav>
+
+  <div class="nav-right">
+    <img id="profileImg" class="profile hidden" />
+    <button id="loginBtn" onclick="openLogin()">🔐</button>
+  </div>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="slides">
+    <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6')"></div>
+    <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1466692476868-aef1dfb1e735')"></div>
+    <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1524594154908-edd0f82c3476')"></div>
+  </div>
+
+  <div class="hero-content">
+    <h1>Detect Plant Diseases</h1>
+    <h2>Instantly with AI</h2>
+    <p>Upload a plant image and get instant diagnosis</p>
+
+    <button class="primary" onclick="openRegister()">Get Started</button>
+  </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="about-section">
+  <h2 class="about-title">How It Works</h2>
+  <p class="about-subtitle">
+    Get accurate plant disease diagnosis in three simple steps
+  </p>
+
+  <div class="about-cards">
+    <div class="about-card">
+      <h4>Step 1</h4>
+      <h3>Upload Image</h3>
+      <p>Take a clear photo or upload an image of the affected plant.</p>
+    </div>
+
+    <div class="about-card">
+      <h4>Step 2</h4>
+      <h3>AI Analysis</h3>
+      <p>Our AI analyzes the image to detect diseases and pests.</p>
+    </div>
+
+    <div class="about-card">
+      <h4>Step 3</h4>
+      <h3>Get Results</h3>
+      <p>Receive instant diagnosis with treatment suggestions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DETECTION SECTION ================= -->
+
+  <!-- <h2 class="about-title">Upload Your Plant Photo</h2>
+  <p class="about-subtitle">
+    Take a clear photo of the affected plant area for best results
+  </p>
+
+  LOGIN REQUIRED BOX -->
+  <!--<div id="loginRequiredBox" style="
+    max-width: 900px;
+    margin: 60px auto 0;
+    padding: 60px 40px;
+    border: 2px dashed #7bed9f;
+    border-radius: 25px;
+    text-align: center;
+    background: rgba(255,255,255,0.85);
+  ">
+
+    <div class="lock-icon"></div>
+
+    <h3 style="margin-bottom: 10px;">Login Required</h3>
+    <p style="color:#555; max-width: 500px; margin: 0 auto 25px;">
+      Please log in to upload plant images and access AI-powered disease detection.
+    </p>
+
+    <button class="primary" onclick="openLogin()">Login to Continue</button>
+  </div>
+-->
+<section id="detection" class="upload-section">
+
+
+
+<!-- ================= UPLOAD UI AFTER LOGIN ================= -->
+  <section id="uploadAfterLogi" class="upload-section hidde">
+
+    <h2 class="about-title">Upload Your Plant Photo</h2>
+    <p class="about-subtitle">
+      Take a clear photo of the affected plant area for best results
+    </p>
+
+    <!-- ✅ FLASK FORM START -->
+    <form action="/predict" method="POST" enctype="multipart/form-data">
+
+      <div class="upload-box">
+
+        <div class="upload-icon">⬆</div>
+
+        <h3>Drop your image here</h3>
+        <p class="upload-or">or click to browse</p>
+
+        <div class="upload-actions">
+          <label class="btn-login">
+            Choose File
+            <input 
+              type="file" 
+              name="file" 
+              id="image" 
+              hidden 
+              accept="image/*" 
+              required
+              onchange="previewImage(event)"
+            >
+          </label>
+        </div>
+
+        <!-- IMAGE PREVIEW -->
+        <img id="imagePreview" class="image-preview hidden" />
+
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" class="primary" style="margin-top:20px;">
+          Predict Disease
+        </button>
+
+        <p class="upload-info">
+          Supported formats: JPG, PNG, WEBP (Max 10MB)
+        </p>
+
+      </div>
+
+    </form>
+    <!-- ================= PREDICTION RESULT ================= -->
+{% if disease %}
+<div class="result-box" style="
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 25px;
+  border-radius: 20px;
+  background: #f8fff8;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  text-align: center;
+">
+
+  <h2 style="color:#2d7a2d;">Prediction Result</h2>
+
+  <img 
+    src="{{ image_path }}" 
+    alt="Uploaded Image"
+    style="width:280px; border-radius:15px; margin:15px 0;"
+  >
+
+  <h3>Disease Name</h3>
+  <p style="font-size:18px; font-weight:600;">
+    {{ disease }}
+  </p>
+
+  <p style="color:#555;">
+    Confidence: <strong>{{ confidence }}%</strong>
+  </p>
+
+  </div>
+  {% endif %}
+    <!-- ✅ FLASK FORM END -->
+
+  </section>
+</section>
+
+
+<div id="overlay"></div>
+
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <span class="close" onclick="closeLogin()">✖</span>
+    <h2>Login</h2>
+    <input id="loginEmail" type="email" placeholder="Email" />
+    <input id="loginPassword" type="password" placeholder="Password" />
+    <button class="btn-login" onclick="login()">Login</button>
+    <p class="link" onclick="switchToRegister()">New user? Register</p>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal" id="registerModal">
+  <div class="modal-box">
+    <span class="close" onclick="closeRegister()">✖</span>
+    <h2>Create Account</h2>
+
+    <input id="name" placeholder="Full Name" />
+    <input id="email" type="email" placeholder="Email ID" />
+    <input id="phone" placeholder="Phone Number" />
+    <input id="password" type="password" placeholder="Create Password" />
+
+    <select id="role">
+      <option value="">Select Role</option>
+      <option>Farmer</option>
+      <option>Organization</option>
+      <option>Learner</option>
+    </select>
+
+    <button class="btn-register" onclick="register()">Register</button>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal" id="successModal">
+  <div class="modal-box success">
+    🎉 Welcome <span id="userName"></span><br />
+    You are successfully logged in!
+  </div>
+</div>
+
+<!--<script type="module" src="firebase.js"></script>
+<script src="script.js"></script>-->
+<script src="{{ url_for('static', filename='firebase.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
